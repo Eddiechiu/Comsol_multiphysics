@@ -120,7 +120,7 @@ end
 
 
 time_step = 1e-5;
-steps = 2000; % 每个周期2000步
+steps = 6000; % 每个周期2000步
 
 S_ybco = 0.05e-3 * 5e-3; % 超导层截面积
 S_sub = 0.2e-3 * 5e-3; % 非超导层截面积
@@ -227,7 +227,7 @@ for i = 1:steps
 
             Br_s(j) = J1 * Br_ybcoP_to_ybcoS(j) + J2 * Br_ybcoS_to_ybcoS(j) + J1 * Br_subP_to_ybcoS(j) + J2 * Br_subS_to_ybcoS(j);
             Bz_s(j) = J1 * Bz_ybcoP_to_ybcoS(j) + J2 * Bz_ybcoS_to_ybcoS(j) + J1 * Bz_subP_to_ybcoS(j) + J2 * Bz_subS_to_ybcoS(j);
-            Jc_s(j) = Jc_calculation(Br_s(j), Bz_s(j), T_ybco_s(j));
+            Jc_s(j) = Jc_calculation_s(Br_s(j), Bz_s(j), T_ybco_s(j));
         end  
 
         % 电流值符号，1为正，-1为负
@@ -502,6 +502,6 @@ plot(current_p_HTS, 'r--'); hold on
 plot(current_s_total, 'b-'); hold on
 plot(current_s_HTS, 'b--'); hold on
 
-plot(u_source * max(current_p_total) / max(u_source), 'k-'); hold on
+% plot(u_source * max(current_p_total) / max(u_source), 'k-'); hold on
 
 toc % 总运行时间
