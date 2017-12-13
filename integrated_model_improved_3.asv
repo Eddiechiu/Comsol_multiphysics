@@ -120,7 +120,7 @@ end
 
 %% 电路模型初始化
 time_step = 1e-5;
-steps = 1000; % 每个周期2000步
+steps = 6000; % 每个周期2000步
 
 S_ybco = 0.05e-3 * 5e-3; % 超导层截面积
 S_sub_s = 0.2e-3 * 5e-3; % 非超导层截面积-secondary
@@ -136,7 +136,7 @@ Rs1 = rho(77) * 14.35 / S_sub_p; % 原边绕组长度14.35 m    Rs1 = rho(T_sub_p) * 1
 Rs2 = rho(77) * 14 / S_sub_s; % 副边绕组长度14 m
 
 % 热传模型载入
-model_2 = mphload('ht_new');
+model_2 = mphload('ht');
 
 % 超导参数
 Ec = 1e-4; % 1e-4 V/m
@@ -268,7 +268,7 @@ for i = 1:steps
             R_ybco_p = 0;
             R_ybco_s = 0;
             for j = 1:40
-                r_p = 57.275 + floor((index_ybco_p_mfh(j) - 81) / 16) * 0.6;
+                r_p = 57.275 + floor(index_ybco_p_mfh(j) / 16) * 0.25;
                 r_p = r_p / 1000;
                 R_ybco_p = R_ybco_p + Ec * (J_ybco_p / Jc_p(j))^(n-1) / Jc_p(j) * 2 * pi * r_p / S_ybco;
 
@@ -409,9 +409,9 @@ for i = 1:steps
         model_2.sol('sol1').runAll;
         % 超导层平均温度计算
         for j = 1:40
-            temp = mphmean(model_2, 'T', 'surface', 'selection', index_ybco_p_ht(j), 'dataset', 'dset1');
+            temp = mphmean(model_2, 'T', 'surface', 'selection', index_ybco_p_mfh(j), 'dataset', 'dset1');
             T_ybco_p(j) = temp(2);
-            temp = mphmean(model_2, 'T', 'surface', 'selection', index_ybco_s_ht(j), 'dataset', 'dset1');
+            temp = mphmean(model_2, 'T', 'surface', 'selection', index_ybco_s_mfh(j), 'dataset', 'dset1');
             T_ybco_s(j) = temp(2);
         end
 
@@ -424,11 +424,11 @@ for i = 1:steps
         T_ybco_s_record_min(i) = min(T_ybco_s);
         
         % 非超导层平均温度计算
-        temp = mphmean(model_2, 'T', 'surface', 'selection', index_sub_p_ht, 'dataset', 'dset1');
+        temp = mphmean(model_2, 'T', 'surface', 'selection', index_sub_p_mfh, 'dataset', 'dset1');
         T_sub_p = temp(2);
         T_sub_p_record(i) = T_sub_p;
 
-        temp = mphmean(model_2, 'T', 'surface', 'selection', index_sub_s_ht, 'dataset', 'dset1');
+        temp = mphmean(model_2, 'T', 'surface', 'selection', index_sub_s_mfh, 'dataset', 'dset1');
         T_sub_s = temp(2);
         T_sub_s_record(i) = T_sub_s;
 
@@ -446,9 +446,9 @@ for i = 1:steps
         model_2.sol('sol2').runAll;
         % 取温度值
         for j = 1:40
-            temp = mphmean(model_2, 'T', 'surface', 'selection', index_ybco_p_ht(j), 'dataset', 'dset2');
+            temp = mphmean(model_2, 'T', 'surface', 'selection', index_ybco_p_mfh(j), 'dataset', 'dset2');
             T_ybco_p(j) = temp(2);
-            temp = mphmean(model_2, 'T', 'surface', 'selection', index_ybco_s_ht(j), 'dataset', 'dset2');
+            temp = mphmean(model_2, 'T', 'surface', 'selection', index_ybco_s_mfh(j), 'dataset', 'dset2');
             T_ybco_s(j) = temp(2);
         end
 
@@ -461,11 +461,11 @@ for i = 1:steps
         T_ybco_s_record_min(i) = min(T_ybco_s);
 
         % 非超导层平均温度计算
-        temp = mphmean(model_2, 'T', 'surface', 'selection', index_sub_p_ht, 'dataset', 'dset2');
+        temp = mphmean(model_2, 'T', 'surface', 'selection', index_sub_p_mfh, 'dataset', 'dset2');
         T_sub_p = temp(2);
         T_sub_p_record(i) = T_sub_p;
 
-        temp = mphmean(model_2, 'T', 'surface', 'selection', index_sub_s_ht, 'dataset', 'dset2');
+        temp = mphmean(model_2, 'T', 'surface', 'selection', index_sub_s_mfh, 'dataset', 'dset2');
         T_sub_s = temp(2);
         T_sub_s_record(i) = T_sub_s;
     end
