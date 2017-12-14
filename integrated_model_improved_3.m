@@ -132,7 +132,7 @@ L2 = 0.22e-3;
 M = 0.209e-3; %互感
 i1_pre = 0; % 原/副边初始电流
 i2_pre = 0;
-Rs1 = rho(77) * 14.35 / S_sub_p; % 原边绕组长度14.35 m    Rs1 = rho(T_sub_p) * 14.35 / (0.15e-3 * 5e-3)
+Rs1 = rho(77) * 14.35 / S_sub_p * 1.75; % 原边绕组长度14.35 m    Rs1 = rho(T_sub_p) * 14.35 / (0.15e-3 * 5e-3)
 Rs2 = rho(77) * 14 / S_sub_s; % 副边绕组长度14 m
 
 % 热传模型载入
@@ -140,7 +140,6 @@ model_2 = mphload('ht_new');
 
 % 超导参数
 Ec = 1e-4; % 1e-4 V/m
-IcB = 40; % 40 A
 n = 28;
 
 % 数据记录
@@ -224,7 +223,7 @@ for i = 1:steps
         for j = 1:40
             Br_p(j) = J1 * Br_ybcoP_to_ybcoP(j) + J2 * Br_ybcoS_to_ybcoP(j) + J1 * Br_subP_to_ybcoP(j) + J2 * Br_subS_to_ybcoP(j);
             Bz_p(j) = J1 * Bz_ybcoP_to_ybcoP(j) + J2 * Bz_ybcoS_to_ybcoP(j) + J1 * Bz_subP_to_ybcoP(j) + J2 * Bz_subS_to_ybcoP(j);
-            Jc_p(j) = Jc_calculation(Br_p(j), Bz_p(j), T_ybco_p(j));
+            Jc_p(j) = Jc_calculation_p(Br_p(j), Bz_p(j), T_ybco_p(j));
 
             Br_s(j) = J1 * Br_ybcoP_to_ybcoS(j) + J2 * Br_ybcoS_to_ybcoS(j) + J1 * Br_subP_to_ybcoS(j) + J2 * Br_subS_to_ybcoS(j);
             Bz_s(j) = J1 * Bz_ybcoP_to_ybcoS(j) + J2 * Bz_ybcoS_to_ybcoS(j) + J1 * Bz_subP_to_ybcoS(j) + J2 * Bz_subS_to_ybcoS(j);
@@ -397,7 +396,7 @@ for i = 1:steps
     end
     
     % sub primary 热源注入
-    Q_sub_p = J_sub_p^2 * rho(T_sub_p);
+    Q_sub_p = J_sub_p^2 * rho(T_sub_p) * 1.75;
     model_2.physics('ht').feature('hs81').set('Q', num2str(Q_sub_p));
     
     % sub secondary 热源注入
@@ -471,7 +470,7 @@ for i = 1:steps
     end
     
     % 非超导层电阻计算
-    Rs1 = rho(T_sub_p) * 14.35 / S_sub_p; % 原边绕组长度14.35 m
+    Rs1 = rho(T_sub_p) * 14.35 / S_sub_p * 1.75; % 原边绕组长度14.35 m
     Rs2 = rho(T_sub_s) * 14 / S_sub_s; % 副边绕组长度14 m
     Rs1_record(i) = Rs1;
     Rs2_record(i) = Rs2;
@@ -491,5 +490,4 @@ plot(current_s_total, 'b-'); hold on
 plot(current_s_HTS, 'b--'); hold on
 
 % plot(u_source * max(current_p_total) / max(u_source), 'k-'); hold on
-
 toc % 总运行时间
