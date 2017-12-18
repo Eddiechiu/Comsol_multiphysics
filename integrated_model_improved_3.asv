@@ -120,7 +120,7 @@ end
 
 %% 电路模型初始化
 time_step = 1e-5;
-steps = 1000; % 每个周期2000步
+steps = 2000; % 每个周期2000步
 
 S_ybco = 0.05e-3 * 5e-3; % 超导层截面积
 S_sub_s = 0.2e-3 * 5e-3; % 非超导层截面积-secondary
@@ -132,7 +132,7 @@ L2 = 0.22e-3;
 M = 0.209e-3; %互感
 i1_pre = 0; % 原/副边初始电流
 i2_pre = 0;
-Rs1 = rho(77) * 14.35 / S_sub_p * 1.75; % 原边绕组长度14.35 m    Rs1 = rho(T_sub_p) * 14.35 / (0.15e-3 * 5e-3)
+Rs1 = rho(77) * 14.35 / S_sub_p; % 原边绕组长度14.35 m    Rs1 = rho(T_sub_p) * 14.35 / (0.15e-3 * 5e-3)
 Rs2 = rho(77) * 14 / S_sub_s; % 副边绕组长度14 m
 
 % 热传模型载入
@@ -140,7 +140,6 @@ model_2 = mphload('ht_new');
 
 % 超导参数
 Ec = 1e-4; % 1e-4 V/m
-IcB = 40; % 40 A
 n = 28;
 
 % 数据记录
@@ -268,7 +267,7 @@ for i = 1:steps
             R_ybco_p = 0;
             R_ybco_s = 0;
             for j = 1:40
-                r_p = 57.275 + floor((index_ybco_p_mfh(j) - 81) / 16) * 0.6;
+                r_p = 56.775 + floor((index_ybco_p_mfh(j) - 81) / 16) * 0.6;
                 r_p = r_p / 1000;
                 R_ybco_p = R_ybco_p + Ec * (J_ybco_p / Jc_p(j))^(n-1) / Jc_p(j) * 2 * pi * r_p / S_ybco;
 
@@ -471,7 +470,7 @@ for i = 1:steps
     end
     
     % 非超导层电阻计算
-    Rs1 = rho(T_sub_p) * 14.35 / S_sub_p; % 原边绕组长度14.35 m
+    Rs1 = rho(T_sub_p) * 14.35 / S_sub_p * 1.75; % 原边绕组长度14.35 m
     Rs2 = rho(T_sub_s) * 14 / S_sub_s; % 副边绕组长度14 m
     Rs1_record(i) = Rs1;
     Rs2_record(i) = Rs2;
@@ -490,6 +489,5 @@ plot(current_p_HTS, 'r--'); hold on
 plot(current_s_total, 'b-'); hold on
 plot(current_s_HTS, 'b--'); hold on
 
-% plot(u_source * max(current_p_total) / max(u_source), 'k-'); hold on
-
+plot(u_source * max(current_p_total) / max(u_source), 'k-'); hold on
 toc % 总运行时间

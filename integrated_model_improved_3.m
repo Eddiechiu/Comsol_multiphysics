@@ -20,6 +20,7 @@
 %% 2017.12.13
 % 更换原边的所有参数
 
+
 tic % 总运行时间
 % mfh编号
 index_ybco_p_mfh = [82 83 84 85 86 87 88 89 98 99 100 101 102 103 104 105 114 115 116 117 118 119 120 121 130 131 132 133 134 135 136 137 146 147 148 149 150 151 152 153];
@@ -120,7 +121,7 @@ end
 
 %% 电路模型初始化
 time_step = 1e-5;
-steps = 1000; % 每个周期2000步
+steps = 2000; % 每个周期2000步
 
 S_ybco = 0.05e-3 * 5e-3; % 超导层截面积
 S_sub_s = 0.2e-3 * 5e-3; % 非超导层截面积-secondary
@@ -132,7 +133,7 @@ L2 = 0.22e-3;
 M = 0.209e-3; %互感
 i1_pre = 0; % 原/副边初始电流
 i2_pre = 0;
-Rs1 = rho(77) * 14.35 / S_sub_p * 1.75; % 原边绕组长度14.35 m    Rs1 = rho(T_sub_p) * 14.35 / (0.15e-3 * 5e-3)
+Rs1 = rho_new(77) * 14.35 / S_sub_p; % 原边绕组长度14.35 m    Rs1 = rho(T_sub_p) * 14.35 / (0.15e-3 * 5e-3)
 Rs2 = rho(77) * 14 / S_sub_s; % 副边绕组长度14 m
 
 % 热传模型载入
@@ -267,7 +268,7 @@ for i = 1:steps
             R_ybco_p = 0;
             R_ybco_s = 0;
             for j = 1:40
-                r_p = 57.275 + floor((index_ybco_p_mfh(j) - 81) / 16) * 0.6;
+                r_p = 56.775 + floor((index_ybco_p_mfh(j) - 81) / 16) * 0.6;
                 r_p = r_p / 1000;
                 R_ybco_p = R_ybco_p + Ec * (J_ybco_p / Jc_p(j))^(n-1) / Jc_p(j) * 2 * pi * r_p / S_ybco;
 
@@ -396,7 +397,7 @@ for i = 1:steps
     end
     
     % sub primary 热源注入
-    Q_sub_p = J_sub_p^2 * rho(T_sub_p) * 1.75;
+    Q_sub_p = J_sub_p^2 * rho_new(T_sub_p);
     model_2.physics('ht').feature('hs81').set('Q', num2str(Q_sub_p));
     
     % sub secondary 热源注入
@@ -470,7 +471,7 @@ for i = 1:steps
     end
     
     % 非超导层电阻计算
-    Rs1 = rho(T_sub_p) * 14.35 / S_sub_p * 1.75; % 原边绕组长度14.35 m
+    Rs1 = rho_new(T_sub_p) * 14.35 / S_sub_p; % 原边绕组长度14.35 m
     Rs2 = rho(T_sub_s) * 14 / S_sub_s; % 副边绕组长度14 m
     Rs1_record(i) = Rs1;
     Rs2_record(i) = Rs2;
@@ -489,5 +490,5 @@ plot(current_p_HTS, 'r--'); hold on
 plot(current_s_total, 'b-'); hold on
 plot(current_s_HTS, 'b--'); hold on
 
-% plot(u_source * max(current_p_total) / max(u_source), 'k-'); hold on
+plot(u_source * max(current_p_total) / max(u_source), 'k-'); hold on
 toc % 总运行时间
